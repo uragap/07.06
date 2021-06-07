@@ -2,11 +2,12 @@
 
 To verify that your structured data is correct, many platforms provide validation tools.
 
-text
+list:
 
-paragraph
+1.  text
+2.  paragraph
 
-sentence
+sentence:
 
 1.  In a new browser window, open the [Google Structured Data Validation Tool](https://developers.google.com/structured-data/testing-tool/).
 2.  Select the **Code Snippet** tab.
