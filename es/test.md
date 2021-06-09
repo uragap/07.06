@@ -1,7 +1,5 @@
 ### Validate the structured data
 
-new line
-
 To verify that your structured data is correct, many platforms provide validation tools.
 
 1. In a new browser window, open the [Google Structured Data Validation Tool](https://developers.google.com/structured-data/testing-tool/).
