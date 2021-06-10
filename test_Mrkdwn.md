@@ -1,491 +1,354 @@
 ---
-$title: AMP for Ads specification
-order: 3
-formats:
-  - ads
-teaser:
-  text: >-
-    _If you'd like to propose changes to the standard, please comment on the
-    [Intent
-toc: true
+layout: post
+title: Web Vitals
+description: Essential metrics for a healthy site
+hero: image/admin/BHaoqqR73jDWe6FL2kfw.png
+authors:
+  - philipwalton
+date: 2020-04-30
+updated: 2020-07-21
+tags:
+  - metrics
+  - performance
+  - web-vitals
 ---
 
-![1](https://prikolnye-kartinki.ru/img/picture/Jan/31/cd47b809864a288682ad43078a9642ab/1.jpg)
+Optimizing for quality of user experience is key to the long-term success of any
+site on the web. Whether you're a business owner, marketer, or developer, Web
+Vitals can help you quantify the experience of your site and identify
+opportunities to improve.
 
-<!--
-This file is imported from https://github.com/ampproject/amphtml/blob/master/extensions/amp-a4a/amp-a4a-format.md.
-Please do not change this file.
-If you have found a bug or an issue please
-have a look and request a pull request there.
--->
+## Overview
 
-<!---
-Copyright 2016 The AMP HTML Authors. All Rights Reserved.
+Web Vitals is an initiative by Google to provide unified guidance for quality
+signals that are essential to delivering a great user experience on the web.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Google has provided a number of tools over the years to measure and report on
+performance. Some developers are experts at using these tools, while others have
+found the abundance of both tools and metrics challenging to keep up with.
 
-      http://www.apache.org/licenses/LICENSE-2.0
+Site owners should not have to be performance gurus in order to understand the
+quality of experience they are delivering to their users. The Web Vitals
+initiative aims to simplify the landscape, and help sites focus on the metrics
+that matter most, the **Core Web Vitals**.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS-IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
+## Core Web Vitals
 
+Core Web Vitals are the subset of Web Vitals that apply to all web pages, should
+be measured by all site owners, and will be surfaced across all Google tools.
+Each of the Core Web Vitals represents a distinct facet of the user experience,
+is measurable [in the
+field](/user-centric-performance-metrics/#how-metrics-are-measured),
+and reflects the real-world experience of a critical
+[user-centric](/user-centric-performance-metrics/#how-metrics-are-measured)
+outcome.
 
-_If you'd like to propose changes to the standard, please comment on the [Intent
-to Implement](https://github.com/ampproject/amphtml/issues/4264)_.
+The metrics that make up Core Web Vitals will [evolve](#evolving-web-vitals)
+over time. The current set for 2020 focuses on three aspects of the user
+experience—_loading_, _interactivity_, and _visual stability_—and includes the
+following metrics (and their respective thresholds):
 
-AMPHTML ads is a mechanism for rendering fast,
-performant ads in AMP pages. To ensure that AMPHTML ad documents ("AMP
-creatives") can be rendered quickly and smoothly in the browser and do
-not degrade user experience, AMP creatives must obey a set of validation
-rules. Similar in spirit to the
-[AMP format rules](https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml), AMPHTML ads have
-access to a limited set of allowed tags, capabilities, and extensions.
+<div class="w-stack w-stack--center w-stack--md">
+  <img src="lcp_ux.svg" width="400px" height="350px"
+       alt="Largest Contentful Paint threshold recommendations">
+  <img src="fid_ux.svg" width="400px" height="350px"
+       alt="First Input Delay threshold recommendations">
+  <img src="cls_ux.svg" width="400px" height="350px"
+       alt="Cumulative Layout Shift threshold recommendations">
+</div>
 
-## AMPHTML ad format rules <a name="amphtml-ad-format-rules"></a>
+- **[Largest Contentful Paint (LCP)](/lcp/)**: measures _loading_ performance.
+  To provide a good user experience, LCP should occur within **2.5 seconds** of
+  when the page first starts loading.
+- **[First Input Delay (FID)](/fid/)**: measures _interactivity_. To provide a
+  good user experience, pages should have a FID of less than **100
+  milliseconds**.
+- **[Cumulative Layout Shift (CLS)](/cls/)**: measures _visual stability_. To
+  provide a good user experience, pages should maintain a CLS of less than
+  **0.1.**
 
-Unless otherwise specified below, the creative must obey all rules given by the
-[AMP format rules](https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml.html),
-included here by reference. For example, the AMPHTML ad [Boilerplate](#boilerplate) deviates from the AMP standard boilerplate.
+For each of the above metrics, to ensure you're hitting the recommended target
+for most of your users, a good threshold to measure is the **75th percentile**
+of page loads, segmented across mobile and desktop devices.
 
-In addition, creatives must obey the following rules:
+Tools that assess Core Web Vitals compliance should consider a page passing if
+it meets the recommended targets at the 75th percentile for all of the above
+three metrics.
 
-<table>
-<thead>
-<tr>
-  <th>Rule</th>
-  <th>Rationale</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Must use <code>&lt;html ⚡4ads></code> or <code>&lt;html amp4ads></code> as its enclosing tags.</td>
-<td>Allows validators to identify a creative document as either a general AMP doc or a restricted AMPHTML ad doc and to dispatch appropriately.</td>
-</tr>
-<tr>
-<td>Must include <code>&lt;script async src="https://cdn.ampproject.org/amp4ads-v0.js">&lt;/script></code> as the runtime script instead of <code>https://cdn.ampproject.org/v0.js</code>.</td>
-<td>Allows tailored runtime behaviors for AMPHTML ads served in cross-origin iframes.</td>
-</tr>
-<tr>
-<td>Must not include a <code>&lt;link rel="canonical"></code> tag.</td>
-<td>Ad creatives don't have a "non-AMP canonical version" and won't be independently search-indexed, so self-referencing would be useless.</td>
-</tr>
-<tr>
-<td>Can include optional meta tags in HTML head as identifiers, in the format of <code>&lt;meta name="amp4ads-id" content="vendor=${vendor},type=${type},id=${id}"></code>. Those meta tags must be placed before the <code>amp4ads-v0.js</code> script. The value of <code>vendor</code> and <code>id</code> are strings containing only [0-9a-zA-Z_-]. The value of <code>type</code> is either <code>creative-id</code> or <code>impression-id</code>.</td>
-<td>Those custom identifiers can be used to identify the impression or the creative. They can be helpful for reporting and debugging.<br><br><p>Example:</p><pre>
-&lt;meta name="amp4ads-id"
-  content="vendor=adsense,type=creative-id,id=1283474">
-&lt;meta name="amp4ads-id"
-  content="vendor=adsense,type=impression-id,id=xIsjdf921S"></pre></td>
-</tr>
-<tr>
-<td><code>&lt;amp-analytics></code> viewability tracking may only target the full-ad selector, via  <code>"visibilitySpec": { "selector": "amp-ad" }</code> as defined in <a href="https://github.com/ampproject/amphtml/issues/4018">Issue #4018</a> and <a href="https://github.com/ampproject/amphtml/pull/4368">PR #4368</a>. In particular, it may not target any selectors for elements within the ad creative.</td>
-<td>In some cases, AMPHTML ads may choose to render an ad creative in an iframe.In those cases, host page analytics can only target the entire iframe anyway, and won’t have access to any finer-grained selectors.<br><br>
-<p>Example:</p>
-<pre>
-&lt;amp-analytics id="nestedAnalytics">
-  &lt;script type="application/json">
-  {
-    "requests": {
-      "visibility": "https://example.com/nestedAmpAnalytics"
-    },
-    "triggers": {
-      "visibilitySpec": {
-      "selector": "amp-ad",
-      "visiblePercentageMin": 50,
-      "continuousTimeMin": 1000
-      }
-    }
-  }
-  &lt;/script>
-&lt;/amp-analytics>
-</pre>
-<p>This configuration sends a request to the <code>https://example.com/nestedAmpAnalytics</code> URL when 50% of the enclosing ad has been continuously visible on the screen for 1 second.</p>
-</td>
-</tr>
-</tbody>
-</table>
+{% Aside %}
+  To learn more about the research and methodology behind these recommendations,
+  see: [Defining the Core Web Vitals metrics
+  thresholds](/defining-core-web-vitals-thresholds/)
+{% endAside %}
 
-### Boilerplate <a name="boilerplate"></a>
+### Tools to measure and report Core Web Vitals
 
-AMPHTML ad creatives require a different, and considerably simpler, boilerplate style line than [general AMP documents do](https://github.com/ampproject/amphtml/blob/master/spec/amp-boilerplate.md):
+Google believes that the Core Web Vitals are critical to all web experiences. As
+a result, it is committed to surfacing these metrics [in all of its popular
+tools](/vitals-tools/). The following sections details which tools support the
+Core Web Vitals.
 
-[sourcecode:html]
-<style amp4ads-boilerplate>
-  body {
-    visibility: hidden;
-  }
-</style>
-[/sourcecode]
+#### Field tools to measure Core Web Vitals
 
-_Rationale:_ The `amp-boilerplate` style hides body content until the AMP
-runtime is ready and can unhide it. If Javascript is disabled or the AMP
-runtime fails to load, the default boilerplate ensures that the content is
-eventually displayed regardless. In AMPHTML ads, however, if Javascript is entirely
-disabled, AMPHTML ads won't run and no ad will ever be shown, so there is no need for
-the `<noscript>` section. In the absence of the AMP runtime, most of the
-machinery that AMPHTML ads rely on (e.g., analytics for visibility
-tracking or `amp-img` for content display) won't be available, so it's better to
-display no ad than a malfunctioning one.
+The [Chrome User Experience
+Report](https://developers.google.com/web/tools/chrome-user-experience-report)
+collects anonymized, real user measurement data for each Core Web Vital. This
+data enables site owners to quickly assess their performance without requiring
+them to manually instrument analytics on their pages, and powers tools like
+[PageSpeed Insights](https://developers.google.com/speed/pagespeed/insights/),
+and Search Console's [Core Web Vitals
+report](https://support.google.com/webmasters/answer/9205520).
 
-Finally, the AMPHTML ad boilerplate uses `amp-a4a-boilerplate` rather than
-`amp-boilerplate` so that validators can easily identify it and produce
-more accurate error messages to help developers.
+<div class="w-table-wrapper">
+  <table>
+    <tr>
+      <td>&nbsp;</td>
+      <td>LCP</td>
+      <td>FID</td>
+      <td>CLS</td>
+    </tr>
+    <tr>
+      <td><a href="https://developers.google.com/web/tools/chrome-user-experience-report">
+        Chrome User Experience Report</a></td>
+      <td>✔</td>
+      <td>✔</td>
+      <td>✔</td>
+    </tr>
+    <tr>
+      <td><a href="https://developers.google.com/speed/pagespeed/insights/">
+        PageSpeed Insights</a></td>
+      <td>✔</td>
+      <td>✔</td>
+      <td>✔</td>
+    </tr>
+    <tr>
+      <td><a href="https://support.google.com/webmasters/answer/9205520">
+        Search Console (Core Web Vitals report)</a></td>
+      <td>✔</td>
+      <td>✔</td>
+      <td>✔</td>
+    </tr>
+  </table>
+</div>
 
-Note that the same rules about mutations to the boilerplate text apply as in
-the [general AMP boilerplate](https://github.com/ampproject/amphtml/blob/master/spec/amp-boilerplate.md).
+{% Aside %}
+  For guidance on how to use these tools, and which tool is right for your use
+  case, see: [Getting started with measuring Web
+  Vitals](/vitals-measurement-getting-started/)
+{% endAside %}
 
-### CSS <a name="css"></a>
+The data provided by Chrome User Experience Report offers a quick way to assess
+the performance of sites, but it does not provide the detailed, per-pageview
+telemetry that is often necessary to accurately diagnose, monitor, and quickly
+react to regressions. As a result, we strongly recommend that sites set up their
+own real-user monitoring.
 
-<table>
-<thead>
-<tr>
-  <th>Rule</th>
-  <th>Rationale</th>
-</tr>
-</thead>
-<tbody>
-  <tr>
-    <td><code>position:fixed</code> and <code>position:sticky</code> are prohibited in creative CSS.</td>
-    <td><code>position:fixed</code> breaks out of shadow DOM, which AMPHTML ads depend on. lso, ads in AMP are already not allowed to use fixed position.</td>
-  </tr>
-  <tr>
-    <td><code>touch-action</code> is prohibited.</td>
-    <td>An ad that can manipulate <code>touch-action</code> can interfere with
-   the user's ability to scroll the host document.</td>
-  </tr>
-  <tr>
-    <td>Creative CSS is limited to 20,000 bytes.</td>
-    <td>Large CSS blocks bloat the creative, increase network
-   latency, and degrade page performance.
-</td>
-  </tr>
-  <tr>
-    <td>Transition and animation are subject to additional restrictions.</td>
-    <td>AMP must be able to control all animations belonging to an
-   ad, so that it can stop them when the ad is not on screen or system resources are very low.</td>
-  </tr>
-  <tr>
-    <td>Vendor-specific prefixes are considered aliases for the same symbol
-   without the prefix for the purposes of validation.  This means that if
-   a symbol <code>foo</code> is prohibited by CSS validation rules, then the symbol <code>-vendor-foo</code> will also be prohibited.</td>
-    <td>Some vendor-prefixed properties provide equivalent functionality to properties that are otherwise prohibited or constrained under these rules.<br><br><p>Example: <code>-webkit-transition</code> and <code>-moz-transition</code> are both considered aliases for <code>transition</code>.  They will only be allowed in contexts where bare <code>transition</code> would be allowed (see <a href="#selectors">Selectors</a> section below).</p></td>
-  </tr>
-</tbody>
-</table>
+#### Measure Core Web Vitals in JavaScript
 
-#### CSS animations and transitions <a name="css-animations-and-transitions"></a>
+Each of the Core Web Vitals can be measured in JavaScript using standard web
+APIs.
 
-##### Selectors <a name="selectors"></a>
+The easiest way to measure all the Core Web Vitals is to use the
+[web-vitals](https://github.com/GoogleChrome/web-vitals) JavaScript library, a
+small, production-ready wrapper around the underlying web APIs that measures
+each metric in a way that accurately matches how they're reported by all the
+Google tools listed above.
 
-The `transition` and `animation` properties are only allowed on selectors that:
+With the [web-vitals](https://github.com/GoogleChrome/web-vitals) library,
+measuring each metric is as simple as calling a single function (see the
+documentation for complete
+[usage](https://github.com/GoogleChrome/web-vitals#usage) and
+[API](https://github.com/GoogleChrome/web-vitals#api) details):
 
-- Contain only `transition`, `animation`, `transform`, `visibility`, or
-  `opacity` properties.
+```js
+import {getCLS, getFID, getLCP} from 'web-vitals';
 
-  _Rationale:_ This allows the AMP runtime to remove this class from context
-  to deactivate animations, when necessary for page performance.
-
-**Good**
-
-[sourcecode:css]
-.box {
-  transform: rotate(180deg);
-  transition: transform 2s;
+function sendToAnalytics(metric) {
+  const body = JSON.stringify(metric);
+  // Use `navigator.sendBeacon()` if available, falling back to `fetch()`.
+  (navigator.sendBeacon && navigator.sendBeacon('/analytics', body)) ||
+      fetch('/analytics', {body, method: 'POST', keepalive: true});
 }
-[/sourcecode]
 
-**Bad**
+getCLS(sendToAnalytics);
+getFID(sendToAnalytics);
+getLCP(sendToAnalytics);
+```
 
-Property not allowed in CSS class.
+Once you've configured your site to use the
+[web-vitals](https://github.com/GoogleChrome/web-vitals) library to measure and
+send your Core Web Vitals data to an analytics endpoint, the next step is to
+aggregate and report on that data to see if your pages are meeting the
+recommended thresholds for at least 75% of page visits.
 
-[sourcecode:css]
-.box {
-  color: red; // non-animation property not allowed in animation selector
-  transform: rotate(180deg);
-  transition: transform 2s;
-}
-[/sourcecode]
+While some analytics providers have built-in support for Core Web Vitals
+metrics, even those that don't should include basic custom metric features that
+allow you to measure Core Web Vitals in their tool.
 
-##### Transitionable and animatable properties <a name="transitionable-and-animatable-properties"></a>
+One example of this is the [Web Vitals
+Report](https://github.com/GoogleChromeLabs/web-vitals-report), which allows
+site owners to measure their Core Web Vitals using Google Analytics. For
+guidance on measuring Core Web Vitals using other analytics tools, see [Best
+practices for measuring Web Vitals in the
+field](/vitals-field-measurement-best-practices/).
 
-The only properties that may be transitioned are opacity and transform.
-([Rationale](http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/))
+You can also report on each of the Core Web Vitals without writing any code
+using the [Web Vitals Chrome
+Extension](https://github.com/GoogleChrome/web-vitals-extension). This extension
+uses the [web-vitals](https://github.com/GoogleChrome/web-vitals) library to
+measure each of these metrics and display them to users as they browse the web.
 
-**Good**
+This extension can be helpful in understanding the performance of your own
+sites, your competitor's sites, and the web at large.
 
-[sourcecode:css]
-transition: transform 2s;
-[/sourcecode]
+<div class="w-table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>LCP</th>
+        <th>FID</th>
+        <th>CLS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="https://github.com/GoogleChrome/web-vitals">web-vitals</a></td>
+        <td>✔</td>
+        <td>✔</td>
+        <td>✔</td>
+      </tr>
+      <tr>
+        <td><a href="https://github.com/GoogleChrome/web-vitals-extension">
+          Web Vitals Extension</a></td>
+        <td>✔</td>
+        <td>✔</td>
+        <td>✔</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-**Bad**
+Alternatively, developers who prefer to measure these metrics directly via the
+underlying web APIs can refer to these metric guides for implementation details:
 
-[sourcecode:css]
-transition: background-color 2s;
-[/sourcecode]
+- [Measure LCP in JavaScript](/lcp/#measure-lcp-in-javascript)
+- [Measure FID in JavaScript](/fid/#measure-fid-in-javascript)
+- [Measure CLS in JavaScript](/cls/#measure-cls-in-javascript)
 
-**Good**
+{% Aside %}
+  For additional guidance on how to measure these metrics using popular
+  analytics services (or your own in-house analytics tools), see: [Best
+  practices for measuring Web Vitals in the
+  field](/vitals-field-measurement-best-practices/)
+{% endAside %}
 
-[sourcecode:css]
-@keyframes turn {
-  from {
-    transform: rotate(180deg);
-  }
+#### Lab tools to measure Core Web Vitals
 
-  to {
-    transform: rotate(90deg);
-  }
-}
-[/sourcecode]
+While all of the Core Web Vitals are, first and foremost, field metrics, many of
+them are also measurable in the lab.
 
-**Bad**
+Lab measurement is the best way to test the performance of features during
+development—before they've been released to users. It's also the best way to
+catch performance regressions before they happen.
 
-[sourcecode:css]
-@keyframes slidein {
-  from {
-    margin-left: 100%;
-    width: 300%;
-  }
+The following tools can be used to measure the Core Web Vitals in a lab
+environment:
 
-  to {
-    margin-left: 0%;
-    width: 100%;
-  }
-}
-[/sourcecode]
+<div class="w-table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>LCP</th>
+        <th>FID</th>
+        <th>CLS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="https://developers.google.com/web/tools/chrome-devtools">
+          Chrome DevTools</a></td>
+        <td>✔</td>
+        <td>✘ (use <a href="/tbt/">TBT</a> instead)</td>
+        <td>✔</td>
+      </tr>
+      <tr>
+        <td><a href="https://developers.google.com/web/tools/lighthouse">
+          Lighthouse</a></td>
+        <td>✔</td>
+        <td>✘ (use <a href="/tbt/">TBT</a> instead)</td>
+        <td>✔</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-### Allowed AMP extensions and builtins <a name="allowed-amp-extensions-and-builtins"></a>
+{% Aside %}
+  Tools like Lighthouse that load pages in a simulated environment without a
+  user cannot measure FID (there is no user input). However, the Total Blocking
+  Time (TBT) metric is lab-measurable and is an excellent proxy for FID.
+  Performance optimizations that improve TBT in the lab should improve FID in
+  the field (see performance recommendations below).
+{% endAside %}
 
-The following are _allowed_ AMP extension modules and AMP built-in tags in an
-AMPHTML ad creative. Extensions or builtin tags not explicitly listed are prohibited.
+While lab measurement is an essential part of delivering great experiences, it
+is not a substitute for field measurement.
 
-- [amp-accordion](https://amp.dev/documentation/components/amp-accordion)
-- [amp-ad-exit](https://amp.dev/documentation/components/amp-ad-exit)
-- [amp-analytics](https://amp.dev/documentation/components/amp-analytics)
-- [amp-anim](https://amp.dev/documentation/components/amp-anim)
-- [amp-animation](https://amp.dev/documentation/components/amp-animation)
-- [amp-audio](https://amp.dev/documentation/components/amp-audio)
-- [amp-bind](https://amp.dev/documentation/components/amp-bind)
-- [amp-carousel](https://amp.dev/documentation/components/amp-carousel)
-- [amp-fit-text](https://amp.dev/documentation/components/amp-fit-text)
-- [amp-font](https://amp.dev/documentation/components/amp-font)
-- [amp-form](https://amp.dev/documentation/components/amp-form)
-- [amp-img](https://amp.dev/documentation/components/amp-img)
-- [amp-layout](https://amp.dev/documentation/components/amp-layout)
-- [amp-lightbox](https://amp.dev/documentation/components/amp-lightbox)
-- amp-mraid, on an experimental basis. If you're considering using this, please open an issue at [wg-ads](https://github.com/ampproject/wg-ads/issues/new).
-- [amp-mustache](https://amp.dev/documentation/components/amp-mustache)
-- [amp-pixel](https://amp.dev/documentation/components/amp-pixel)
-- [amp-position-observer](https://amp.dev/documentation/components/amp-position-observer)
-- [amp-selector](https://amp.dev/documentation/components/amp-selector)
-- [amp-social-share](https://amp.dev/documentation/components/amp-social-share)
-- [amp-video](https://amp.dev/documentation/components/amp-video)
+The performance of a site can vary dramatically based on a user's device
+capabilities, their network conditions, what other processes may be running on
+the device, and how they're interacting with the page. In fact, each of the Core
+Web Vitals metrics can have its score affected by user interaction. Only field
+measurement can accurately capture the complete picture.
 
-Most of the omissions are either for performance or to make AMPHTML ads
-simpler to analyze.
+### Recommendations for improving your scores
 
-_Example:_ `<amp-ad>` is omitted from this list. It is explicitly disallowed
-because allowing an `<amp-ad>` inside an `<amp-ad>` could potentially lead to
-unbounded waterfalls of ad loading, which does not meet AMPHTML ads performance goals.
+Once you've measured the Core Web Vitals and identified areas for improvement,
+the next step is to optimize. The following guides offer specific
+recommendations for how to optimize your pages for each of the Core Web Vitals:
 
-_Example:_ `<amp-iframe>` is omitted from this list. It is disallowed
-because ads could use it to execute arbitrary Javascript and load arbitrary
-content. Ads wanting to use such capabilities should return `false` from
-their
-[a4aRegistry](https://github.com/ampproject/amphtml/blob/master/ads/_a4a-config.js#L40)
-entry and use the existing '3p iframe' ad rendering mechanism.
+- [Optimize LCP](/optimize-lcp/)
+- [Optimize FID](/optimize-fid/)
+- [Optimize CLS](/optimize-cls/)
 
-_Example:_ `<amp-facebook>`, `<amp-instagram>`, `<amp-twitter>`, and
-`<amp-youtube>` are all omitted for the same reason as `<amp-iframe>`: They
-all create iframes and can potentially consume unbounded resources in them.
+## Other Web Vitals
 
-_Example:_ `<amp-ad-network-*-impl>` are omitted from this list. The
-`<amp-ad>` tag handles delegation to these implementation tags; creatives
-should not attempt to include them directly.
+While the Core Web Vitals are the critical metrics for understanding and
+delivering a great user experience, there are other vital metrics as well.
 
-_Example:_ `<amp-lightbox>` is not yet included because even some AMPHTML ads creatives
-may be rendered in an iframe and there is currently no mechanism for an ad to
-expand beyond an iframe. Support may be added for this in the future, if there
-is demonstrated desire for it.
+These other Web Vitals often serve as proxy or supplemental metrics for the Core
+Web Vitals, to help capture a larger part of the experience or to aid in
+diagnosing a specific issue.
 
-### HTML tags <a name="html-tags"></a>
+For example, the metrics [Time to First Byte (TTFB)](/time-to-first-byte/) and
+[First Contentful Paint (FCP)](/fcp/) are both vital aspects of the _loading_
+experience, and are both useful in diagnosing issues with LCP (slow [server
+response times](/overloaded-server/) or [render-blocking
+resources](/render-blocking-resources/), respectively).
 
-The following are _allowed_ tags in an AMPHTML ads creative. Tags not explicitly
-allowed are prohibited. This list is a subset of the general [AMP tag
-addendum allowlist](https://github.com/ampproject/amphtml/blob/master/extensions/amp-a4a/../../spec/amp-tag-addendum.md). Like that list, it is
-ordered consistent with HTML5 spec in section 4 [The Elements of HTML](http://www.w3.org/TR/html5/single-page.html#html-elements).
+Similarly, metrics like [Total Blocking Time (TBT)](/tbt/) and [Time to
+Interactive (TTI)](/tti/) are lab metrics that are vital in catching and
+diagnosing potential _interactivity_ issues that will impact FID. However, they
+are not part of the Core Web Vitals set because they are not field-measurable,
+nor do they reflect a
+[user-centric](/user-centric-performance-metrics/#how-metrics-are-measured)
+outcome.
 
-Most of the omissions are either for performance or because the tags are not
-HTML5 standard. For example, `<noscript>` is omitted because AMPHTML ads depends on
-JavaScript being enabled, so a `<noscript>` block will never execute and,
-therefore, will only bloat the creative and cost bandwidth and latency.
-Similarly, `<acronym>`, `<big>`, et al. are prohibited because they are not
-HTML5 compatible.
+## Evolving Web Vitals
 
-#### 4.1 The root element <a name="41-the-root-element"></a>
+Web Vitals and Core Web Vitals represent the best available signals developers
+have today to measure quality of experience across the web, but these signals
+are not perfect and future improvements or additions should be expected.
 
-4.1.1 `<html>`
+The **Core Web Vitals** are relevant to all web pages and featured across
+relevant Google tools. Changes to these metrics will have wide-reaching impact;
+as such, developers should expect the definitions and thresholds of the Core Web
+Vitals to be stable, and updates to have prior notice and a predictable, annual
+cadence.
 
-- Must use types `<html ⚡4ads>` or `<html amp4ads>`
+The other Web Vitals are often context or tool specific, and may be more
+experimental than the Core Web Vitals. As such, their definitions and thresholds
+may change with greater frequency.
 
-#### 4.2 Document metadata <a name="42-document-metadata"></a>
-
-4.2.1 `<head>`
-
-4.2.2 `<title>`
-
-4.2.4 `<link>`
-
-- `<link rel=...>` tags are disallowed, except for `<link rel=stylesheet>`.
-- **Note:** Unlike in general AMP, `<link rel="canonical">` tags are
-  prohibited.
-
-  4.2.5 `<style>`
-  4.2.6 `<meta>`
-
-#### 4.3 Sections <a name="43-sections"></a>
-
-4.3.1 `<body>`
-4.3.2 `<article>`
-4.3.3 `<section>`
-4.3.4 `<nav>`
-4.3.5 `<aside>`
-4.3.6 `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, and `<h6>`
-4.3.7 `<header>`
-4.3.8 `<footer>`
-4.3.9 `<address>`
-
-#### 4.4 Grouping Content <a name="44-grouping-content"></a>
-
-4.4.1 `<p>`
-4.4.2 `<hr>`
-4.4.3 `<pre>`
-4.4.4 `<blockquote>`
-4.4.5 `<ol>`
-4.4.6 `<ul>`
-4.4.7 `<li>`
-4.4.8 `<dl>`
-4.4.9 `<dt>`
-4.4.10 `<dd>`
-4.4.11 `<figure>`
-4.4.12 `<figcaption>`
-4.4.13 `<div>`
-4.4.14 `<main>`
-
-#### 4.5 Text-level semantics <a name="45-text-level-semantics"></a>
-
-4.5.1 `<a>`
-4.5.2 `<em>`
-4.5.3 `<strong>`
-4.5.4 `<small>`
-4.5.5 `<s>`
-4.5.6 `<cite>`
-4.5.7 `<q>`
-4.5.8 `<dfn>`
-4.5.9 `<abbr>`
-4.5.10 `<data>`
-4.5.11 `<time>`
-4.5.12 `<code>`
-4.5.13 `<var>`
-4.5.14 `<samp>`
-4.5.15 `<kbd >`
-4.5.16 `<sub>` and `<sup>`
-4.5.17 `<i>`
-4.5.18 `<b>`
-4.5.19 `<u>`
-4.5.20 `<mark>`
-4.5.21 `<ruby>`
-4.5.22 `<rb>`
-4.5.23 `<rt>`
-4.5.24 `<rtc>`
-4.5.25 `<rp>`
-4.5.26 `<bdi>`
-4.5.27 `<bdo>`
-4.5.28 `<span>`
-4.5.29 `<br>`
-4.5.30 `<wbr>`
-
-#### 4.6 Edits <a name="46-edits"></a>
-
-4.6.1 `<ins>`
-4.6.2 `<del>`
-
-#### 4.7 Embedded Content <a name="47-embedded-content"></a>
-
-- Embedded content is supported only via AMP tags, such as `<amp-img>` or
-  `<amp-video>`.
-
-#### 4.7.4 `<source>` <a name="474-source"></a>
-
-#### 4.7.18 SVG <a name="4718-svg"></a>
-
-SVG tags are not in the HTML5 namespace. They are listed below without section ids.
-
-`<svg>`
-`<g>`
-`<path>`
-`<glyph>`
-`<glyphref>`
-`<marker>`
-`<view>`
-`<circle>`
-`<line>`
-`<polygon>`
-`<polyline>`
-`<rect>`
-`<text>`
-`<textpath>`
-`<tref>`
-`<tspan>`
-`<clippath>`
-`<filter>`
-`<lineargradient>`
-`<radialgradient>`
-`<mask>`
-`<pattern>`
-`<vkern>`
-`<hkern>`
-`<defs>`
-`<use>`
-`<symbol>`
-`<desc>`
-`<title>`
-
-#### 4.9 Tabular data <a name="49-tabular-data"></a>
-
-4.9.1 `<table>`
-4.9.2 `<caption>`
-4.9.3 `<colgroup>`
-4.9.4 `<col>`
-4.9.5 `<tbody>`
-4.9.6 `<thead>`
-4.9.7 `<tfoot>`
-4.9.8 `<tr>`
-4.9.9 `<td>`
-4.9.10 `<th>`
-
-#### 4.10 Forms <a name="410-forms"></a>
-
-4.10.8 `<button>`
-
-#### 4.11 Scripting <a name="411-scripting"></a>
-
-- Like a general AMP document, the creative's `<head>` tag must contain a
-  `<script async src="https://cdn.ampproject.org/amp4ads-v0.js"></script>` tag.
-- Unlike general AMP, `<noscript>` is prohibited.
-  - _Rationale:_ Since AMPHTML ads requires Javascript to be enabled to function
-    at all, `<noscript>` blocks serve no purpose in AMPHTML ads and
-    only cost network bandwidth.
-- Unlike general AMP, `<script type="application/ld+json">` is
-  prohibited.
-  - _Rationale:_ JSON LD is used for structured data markup on host
-    pages, but ad creatives are not standalone documents and don't
-    contain structured data. JSON LD blocks in them would just cost
-    network bandwidth.
-- All other scripting rules and exclusions are carried over from general
-  AMP.  
+For all Web Vitals, changes will be clearly documented in this public
+[CHANGELOG](http://bit.ly/chrome-speed-metrics-changelog).
