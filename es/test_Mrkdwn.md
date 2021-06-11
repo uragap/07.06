@@ -33,3 +33,5 @@ Las etiquetas SVG no están en el espacio de nombres HTML5. Se enumeran a contin
 `&lt;título&gt;`
 
 texto
+
+new
