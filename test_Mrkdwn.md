@@ -1,17 +1,35 @@
-The metrics that make up Core Web Vitals will [evolve](#evolving-web-vitals)
-over time. The current set for 2020 focuses on three aspects of the user
-experience—_loading_, _interactivity_, and _visual stability_—and includes the
-following metrics (and their respective thresholds):
+#### 4.7.18 SVG <a name="4718-svg"></a>
 
-<div class="w-stack w-stack--center w-stack--md">
-  <img src="lcp_ux.svg" width="400px" height="350px"
-       alt="Largest Contentful Paint threshold recommendations">
-  <img src="fid_ux.svg" width="400px" height="350px"
-       alt="First Input Delay threshold recommendations">
-  <img src="cls_ux.svg" width="400px" height="350px"
-       alt="Cumulative Layout Shift threshold recommendations">
-</div>
+SVG tags are not in the HTML5 namespace. They are listed below without section ids.
 
-For each of the above metrics, to ensure you're hitting the recommended target
-for most of your users, a good threshold to measure is the **75th percentile**
-of page loads, segmented across mobile and desktop devices.
+`<svg>`
+`<g>`
+`<path>`
+`<glyph>`
+`<glyphref>`
+`<marker>`
+`<view>`
+`<circle>`
+`<line>`
+`<polygon>`
+`<polyline>`
+`<rect>`
+`<text>`
+`<textpath>`
+`<tref>`
+`<tspan>`
+`<clippath>`
+`<filter>`
+`<lineargradient>`
+`<radialgradient>`
+`<mask>`
+`<pattern>`
+`<vkern>`
+`<hkern>`
+`<defs>`
+`<use>`
+`<symbol>`
+`<desc>`
+`<title>`
+
+text
