@@ -40,6 +40,8 @@ limitations under the License.
 
 Los anuncios AMP HTML son un mecanismo para mostrar anuncios rápidos y de alto rendimiento en páginas AMP. Para garantizar que los documentos publicitarios AMP HTML ("creatividades AMP") se puedan procesar de forma rápida y fluida en el navegador y no degraden la experiencia del usuario, las creatividades AMP deben obedecer un conjunto de reglas de validación. De manera similar a las[reglas de formato de AMP](https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml) , los anuncios AMP HTML tienen acceso a un conjunto limitado de etiquetas, capacidades y extensiones permitidas.
 
+text
+
 ## Reglas de formato de anuncios AMP HTML<a name="amphtml-ad-format-rules"></a>
 
 A menos que se especifique lo contrario a continuación, la creatividad debe obedecer todas las reglas dadas por las [reglas de formato de AMP](https://amp.dev/documentation/guides-and-tutorials/learn/spec/amphtml.html) , incluidas aquí como referencia. Por ejemplo, el anuncio HTML [de AMP Boilerplate se](#boilerplate) desvía del texto estándar de AMP.
