@@ -95,7 +95,8 @@ Además, las creatividades deben cumplir las siguientes reglas:
   }
   &lt;/script&gt;
 &lt;/amp-analytics&gt;
-</pre> <p>This configuration sends a request to the <code>https://example.com/nestedAmpAnalytics</code> URL when 50% of the enclosing ad has been continuously visible on the screen for 1 second.</p> </td>
+</pre> <p>This configuration sends a request to the <code>https://example.com/nestedAmpAnalytics</code> URL when 50% of the enclosing ad has been continuously visible on the screen for 1 second.</p>
+</td>
 </tr>
 </tbody>
 </table>
